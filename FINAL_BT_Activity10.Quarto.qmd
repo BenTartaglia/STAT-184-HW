@@ -1,0 +1,160 @@
+---
+title: "Activity #10 Submission"
+subtitle: "Plotting h(x), Recreated Plot, and Tortilla Prices"
+author: "Ben Tartaglia"
+date: "`r Sys.Date()`"
+format:
+  html:
+    self-contained: true
+---
+
+## Question 1
+
+```{r}
+# Load necessary library
+library(ggplot2)
+
+myFunction <- function(x) {
+  y <- (cos(4 * x) + tan(0.5 * x))^4
+  return(y)
+}
+
+# Plot the function
+ggplot() +
+  stat_function(
+    fun = myFunction,
+    xlim = c(0, 1),
+    n = 1000
+  ) +
+  theme_bw() +
+  labs(
+    x = "x",
+    y = "h(x)"
+  )
+
+```
+
+## Question 2
+
+```{r}
+# Example of a recreated plot
+library(ggplot2)
+
+# Create a scatter plot using the diamonds dataset
+ggplot(data = ggplot2::diamonds, aes(x = carat, y = price, color = cut)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Diamond Prices by Carat and Cut",
+    x = "Carat",
+    y = "Price"
+  ) +
+  theme_minimal()
+
+```
+
+## Question 3
+
+```{r}
+# PART A
+# Load necessary libraries
+library(dplyr)
+library(readr)
+
+# Read in the data
+tortilla_data <- read_csv("C:/Users/BenTa/Downloads/tortilla_data.csv")
+
+# Filter for 2007 and compute the average price across all states
+avg_price_2007 <- tortilla_data %>%
+  filter(year == 2007) %>%
+  summarize(avg_price = mean(price, na.rm = TRUE))
+
+avg_price_2007
+
+# PART B
+# Filter for 2024 and compute the average price across all states
+avg_price_2024 <- tortilla_data %>%
+  filter(year == 2024) %>%
+  summarize(avg_price = mean(price, na.rm = TRUE))
+
+avg_price_2024
+
+
+# PART c
+# Calculate percent change from 2007 to 2024
+percent_change <- ((avg_price_2024$avg_price - avg_price_2007$avg_price) / avg_price_2007$avg_price) * 100
+
+percent_change
+
+
+# PART D
+# Compute yearly averages across all states
+yearly_avg <- tortilla_data %>%
+  group_by(year) %>%
+  summarize(avg_price = mean(price, na.rm = TRUE))
+
+# Plot yearly averages
+ggplot(yearly_avg, aes(x = year, y = avg_price)) +
+  geom_line() +
+  labs(
+    title = "Average Tortilla Prices in Border States (2007-2024)",
+    x = "Year",
+    y = "Average Price (MXN)"
+  ) +
+  theme_minimal()
+
+
+# PART E
+# Filter for 2016 data
+data_2016 <- tortilla_data %>%
+  filter(year == 2016)
+
+# Summary statistics for each state in 2016
+summary_stats <- data_2016 %>%
+  group_by(state) %>%
+  summarize(
+    avg_price = mean(price, na.rm = TRUE),
+    min_price = min(price, na.rm = TRUE),
+    max_price = max(price, na.rm = TRUE),
+    median_price = median(price, na.rm = TRUE),
+    sd_price = sd(price, na.rm = TRUE)
+  )
+
+summary_stats
+
+# Boxplot for tortilla prices in 2016
+ggplot(data_2016, aes(x = state, y = price)) +
+  geom_boxplot() +
+  labs(
+    title = "Tortilla Prices in Border States (2016)",
+    caption = "Data includes prices from six states bordering the U.S.",
+    x = "State",
+    y = "Price (MXN)"
+  ) +
+  theme_minimal()
+
+
+# PART F
+# Filter data for NuevoLeon
+nuevo_leon_data <- tortilla_data %>%
+  filter(state == "NuevoLeon")
+
+# Plot tortilla prices by store type for NuevoLeon
+ggplot(nuevo_leon_data, aes(x = year, y = price, color = storeType)) +
+  geom_line(stat = "summary", fun = "mean") +  # Average prices by year
+  labs(
+    title = "Tortilla Prices in Nuevo Leon by Store Type (2007-2024)",
+    caption = "Small businesses vs. large corporations",
+    x = "Year",
+    y = "Price (MXN)"
+  ) +
+  theme_minimal()
+
+
+# PART G
+fig.cap="Image of a tortilla. Source: [Bing Images](https://th.bing.com/th/id/OIP.hSMgBiVMqmzfP6BrKu6xagAAAA?rs=1&pid=ImgDetMain)."
+knitr::include_graphics("C:/Users/BenTa/Downloads/tortilla_pic.jpg")
+
+
+# PART H 
+# The data used in this analysis was downloaded from Kaggle.
+```
